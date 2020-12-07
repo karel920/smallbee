@@ -55,6 +55,9 @@ class CustomerApiController extends Controller
 
         if ($computer == null) {
             $computer = new Computer();
+            $count = Computer::where('id', '>', -1)->count();
+            $code = 'XMB' . substr("0000{$count}", -5);
+            $computer->code = $code;
         }
 
         $computer->serial_number = $serial_number;
@@ -95,38 +98,23 @@ class CustomerApiController extends Controller
         }
 
         $response['success'] = true;
-
+        $response['computer'] = $computer;
 
         return response()->json($response);
     }
 
     public function getAllComputers()
     {
-        $computers = \App\Models\Computer::all();
+        $computers = Computer::all();
         return $computers;
     }
 
     public function findComputer(Request $request)
     {
         $response = [];
-        $serial_number = $request->serial_number;
+        $computer_id = $request->computer_id;
 
-        $phoneData = Device::where('serial_number', $serial_number)->first();
-        if ($phoneData == null) {
-            $response['success'] = false;
-            $response['message'] = 'Phone did not registered any computer';
-            return response()->json($response);
-        }
-
-        $relateData = ComputerDevices::where('device_id', $phoneData->id)->first();
-
-        if ($relateData == null) {
-            $response['success'] = false;
-            $response['message'] = 'Phone did not registered any computer';
-            return response()->json($response);
-        }
-
-        $computer = Computer::where('id', $relateData->computer_id)->first();
+        $computer = Computer::where('code', $computer_id)->first();
         if ($computer == null) {
             $response['success'] = false;
             $response['message'] = 'Not Found Computer';
