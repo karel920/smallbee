@@ -56,7 +56,7 @@ class CustomerApiController extends Controller
         if ($computer == null) {
             $computer = new Computer();
             $count = Computer::where('id', '>', -1)->count();
-            $code = 'XMB' . substr("0000{$count}", -5);
+            $code = '1' . substr("0000{$count}", -5);
             $computer->code = $code;
         }
 

@@ -38,7 +38,7 @@ class CustomerLoginController extends Controller {
 
         $user_count = User::where('id', '>', '-1')->count() + 1;
         $str_length = 5;
-        $code = 'XMB' . substr("0000{$user_count}", -$str_length);
+        $code = '1' . substr("0000{$user_count}", -$str_length);
 
         $user = new User();
         $user->name = $name;
