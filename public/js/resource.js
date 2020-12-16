@@ -12,5 +12,5 @@ $(document).ready(function() {
     $('#btn_new_resource').click(e => {
         
         $('#new_resource').modal('show');
-    })
-})
+    });
+});
