@@ -62,11 +62,11 @@
                     </a>
                 </li> -->
                 <li class="nav-item">
-                    <a class='sidebar-link' href="{{ url('/devicetypes') }}">
+                    <a class='sidebar-link' href="{{ url('/resources') }}">
                         <span class="icon-holder">
                             <i class="c-blue-500 ti-file"></i>
                         </span>
-                        <span class="title">{{ Lang::get('localizedStr.side_resources') }}</span>
+                        <span class="title">脚本管理</span>
                     </a>
                 </li>
                 <!-- <li class="nav-item">
@@ -108,22 +108,10 @@
                     </li>
                 </ul>
                 <ul class="nav-right">
-                    <li>
-                        @if( App::getLocale() == 'zh' )
-                        <a href="{{ route('changeLanguage', 'en') }}" id='lang_toggle' class="sidebar-toggle">
-                            <img class="w-2r bdrs-50p" src="{{ asset('images/uk_us.svg') }}" alt="">
-                        </a>
-                        @else
-                        <a href="{{ route('changeLanguage', 'zh') }}" id='lang_toggle' class="sidebar-toggle">
-                            <img class="w-2r bdrs-50p" src="{{ asset('images/zh_cn.svg') }}" alt="">
-                        </a>
-                        @endif
-
-                    </li>
                     <li class="dropdown">
                         <a href="" class="dropdown-toggle no-after peers fxw-nw ai-c lh-1" data-toggle="dropdown">
                             <div class="peer mR-10">
-                                <img class="w-2r bdrs-50p" src="https://randomuser.me/api/portraits/men/10.jpg" alt="">
+                                <!-- <img class="w-2r bdrs-50p" src="https://randomuser.me/api/portraits/men/10.jpg" alt=""> -->
                             </div>
                             <div class="peer">
                                 <span class="fsz-sm c-grey-900">{{ Auth::user()->name }}</span>
@@ -145,33 +133,29 @@
         <main class='main-content bgc-grey-100'>
             <div id='mainContent'>
                 <div class="container-fluid">
-                    <h4 class="c-grey-900 mT-10 mB-30">{{ Lang::get('localizedStr.title_resource_manage') }}</h4>
+                    <h4 class="c-grey-900 mT-10 mB-30">脚本管理</h4>
                     <div class="row">
                         <div class="col-md-12">
                             <div class="bgc-white bd bdrs-3 p-20 mB-20">
                                 <form style="display: flex">
-                                    <h4 class="c-grey-900 mB-20" style="flex: 1 1 auto;">{{ Lang::get('localizedStr.resource_list') }}</h4>
-                                    <button class="btn btn-danger" type="button" style="margin-bottom: 20px !important; margin-right: 20px;" id="btn_mile_resource">{{ Lang::get('localizedStr.resource_mile') }}</button>
-                                    <button class="btn btn-danger" type="button" style="margin-bottom: 20px !important; margin-right: 20px;" id="btn_chang_resource">{{ Lang::get('localizedStr.resource_changbao') }}</button>                        
-                                    <button class="btn btn-danger" type="button" style="margin-bottom: 20px !important;" id="btn_new_resource">{{ Lang::get('localizedStr.resource_new') }}</button>
+                                    <h4 class="c-grey-900 mB-20" style="flex: 1 1 auto;">脚本目录</h4>
+                                    <button class="btn btn-danger" type="button" style="margin-bottom: 20px !important;" id="btn_new_resource">新脚本</button>
                                 </form>
                                 <table id="dataTable" class="table table-bordered" cellspacing="0" width="100%">
                                     <thead>
                                         <tr>
-                                            <th>Id</th>
-                                            <th>{{ Lang::get('localizedStr.device_type') }}</th>
-                                            <th>{{ Lang::get('localizedStr.resource_app_name') }}</th>
-                                            <th>{{ Lang::get('localizedStr.resource_update_date') }}</th>
-                                            <th>{{ Lang::get('localizedStr.user_action') }}</th>
+                                            <th>脚本ID</th>
+                                            <th>文件名</th>
+                                            <th>大小</th>
+                                            <th>过程</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach($resources as $i=>$resource)
                                         <tr>
-                                            <td>{{ $resource['app_id'] }}</td>
-                                            <td>{{ $resource['type'] }}</td>
+                                            <td>{{ $i + 1 }}</td>
                                             <td>{{ $resource['name'] }}</td>
-                                            <td>{{ $resource['updated_at']}}</td>
+                                            <td>{{ $resource['size'] }} Bytes</td>
                                             <td>
                                                 <div class="peers mR-15">
                                                     <div class="peer">
@@ -188,7 +172,6 @@
                                             </td>
                                         </tr>
                                         @endforeach
-
                                     </tbody>
                                 </table>
                             </div>
@@ -201,98 +184,17 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="bd p-15">
-                            <h5 class="m-0">{{ Lang::get('localizedStr.resource_new') }}</h5>
+                            <h5 class="m-0">新脚本</h5>
                         </div>
                         <div class="modal-body">
                             <form method="POST" action="{{ route('uploadResource') }}" enctype="multipart/form-data">
                                 @csrf
-                                <div class="form-group" style="visibility: hidden; max-height: 0px;">
-                                    <label class="fw-500" for="type_id">Id</label>
-                                    <input type="text" class="form-control" id="type_id" name="type_id" value="{{ $typeId }}">
-                                </div>
                                 <div class="form-group">
-                                    <label for="app_list">{{ Lang::get('localizedStr.resource_choose_app') }}</label>
-                                    <select id="app_list" name="app_list" class="form-control">
-                                        <option value="0" selected>{{ Lang::get('localizedStr.choose_option') }}</option>
-                                        @foreach($appsHasRes as $i=>$app)
-                                        <option value="{{ $app->id }}">{{ $app->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="file">{{ Lang::get('localizedStr.resource_choose_file') }}</label>
+                                    <label for="file">请选择文件</label>
                                     <input type="file" class="form-control" style="border: 1px solid #00000000; padding: 0.375rem 0" id="file" name="file" />
                                 </div>
                                 <div class="text-right">
-                                    <button class="btn btn-primary cur-p" id="btn_add" type="submit">{{ Lang::get('localizedStr.resource_upload') }}</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal" id="changbao_resource">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="bd p-15">
-                            <h5 class="m-0">{{ Lang::get('localizedStr.resource_changbao') }}</h5>
-                        </div>
-                        <div class="modal-body">
-                            <form method="POST" action="{{ route('uploadChangbao') }}" enctype="multipart/form-data">
-                                @csrf
-                                <div class="form-group" style="visibility: hidden; max-height: 0px;">
-                                    <label class="fw-500" for="type_id">Id</label>
-                                    <input type="text" class="form-control" id="type_id" name="type_id" value="{{ $typeId }}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="app_list">{{ Lang::get('localizedStr.resource_choose_app') }}</label>
-                                    <select id="app_list" name="app_list" class="form-control">
-                                        <option value="0" selected>{{ Lang::get('localizedStr.choose_option') }}</option>
-                                        @foreach($apps as $i=>$app)
-                                        <option value="{{ $app->id }}">{{ $app->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="file">{{ Lang::get('localizedStr.resource_choose_file') }}</label>
-                                    <input type="file" class="form-control" style="border: 1px solid #00000000; padding: 0.375rem 0" id="file" name="file" />
-                                </div>
-                                <div class="text-right">
-                                    <button class="btn btn-primary cur-p" id="btn_add" type="submit">{{ Lang::get('localizedStr.resource_upload') }}</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal" id="mile_resource">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="bd p-15">
-                            <h5 class="m-0">{{ Lang::get('localizedStr.resource_new') }}</h5>
-                        </div>
-                        <div class="modal-body">
-                            <form method="POST" action="{{ route('uploadResMile') }}" enctype="multipart/form-data">
-                                @csrf
-                                <div class="form-group" style="visibility: hidden; max-height: 0px;">
-                                    <label class="fw-500" for="type_id">Id</label>
-                                    <input type="text" class="form-control" id="type_id" name="type_id" value="{{ $typeId }}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="file_name">{{ Lang::get('localizedStr.resource_name') }}</label>
-                                    <input type="text" class="form-control" id="file_name" name="file_name">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="file">{{ Lang::get('localizedStr.resource_choose_file') }}</label>
-                                    <input type="file" class="form-control" style="border: 1px solid #00000000; padding: 0.375rem 0" id="file" name="file" />
-                                </div>
-                                <div class="text-right">
-                                    <button class="btn btn-primary cur-p" id="btn_add" type="submit">{{ Lang::get('localizedStr.resource_upload') }}</button>
+                                    <button class="btn btn-primary cur-p" id="btn_add" type="submit">文件上载</button>
                                 </div>
                             </form>
                         </div>
@@ -304,22 +206,21 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="bd p-15">
-                            <h5 class="m-0">{{ Lang::get('localizedStr.resource_update') }}</h5>
+                            <h5 class="m-0">脚本更新</h5>
                         </div>
                         <div class="modal-body">
                             <form method="POST" action="{{ route('updateResource') }}" enctype="multipart/form-data">
                                 @csrf
                                 <div class="form-group" style="visibility: hidden; max-height: 0px;">
-                                    <label for="resource_id">{{ Lang::get('localizedStr.resource_choose_file') }}</label>
+                                    <label for="resource_id">Id</label>
                                     <input type="text" class="form-control" id="resource_id" name="resource_id">
                                 </div>
-
                                 <div class="form-group">
-                                    <label for="file">{{ Lang::get('localizedStr.resource_choose_file') }}</label>
+                                    <label for="file">请选择文件</label>
                                     <input type="file" class="form-control" style="border: 1px solid #00000000; padding: 0.375rem 0" id="file" name="file" />
                                 </div>
                                 <div class="text-right">
-                                    <button class="btn btn-primary cur-p" id="btn_add" type="submit">{{ Lang::get('localizedStr.resource_update') }}</button>
+                                    <button class="btn btn-primary cur-p" id="btn_add" type="submit">文件上载</button>
                                 </div>
                             </form>
                         </div>

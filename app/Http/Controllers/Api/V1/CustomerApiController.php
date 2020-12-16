@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Computer;
 use App\Models\ComputerDevices;
 use App\Models\Device;
+use App\Models\Resource;
 use App\Models\User;
 use App\Models\UserComputers;
 use Illuminate\Http\Request;
@@ -125,5 +126,33 @@ class CustomerApiController extends Controller
         $response['computer'] = $computer;
 
         return response()->json($response);
+    }
+
+    public function getResources() {
+        $cond = Resource::where('id', '>', -1);
+        $resources = $cond->get();
+
+        $deviceList = [];
+        foreach ($resources as $resource) {
+            $data = [];
+            $data['id'] = $resource->id;
+            $data['name'] = $resource->name;
+            $data['size'] = $resource->size;
+            $data['created_at'] = $resource->created_at;
+
+            array_push($deviceList, $data);
+        }
+
+        $response['success'] = true;
+        $response['resources'] = $deviceList;
+
+        return response()->json($response);
+    }
+
+    public function resourceDownload($id) {
+        $resource = Resource::where('id', $id)->first();
+        $fileName = $resource->name;
+        $filePath = resource_path().'/'.'js/temp'.'/'.$fileName;
+        return response()->download($filePath, $fileName); 
     }
 }

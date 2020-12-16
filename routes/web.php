@@ -14,14 +14,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/resources');
 });
 
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/resources', 'ManageResourceController@getResources')->name('getresources');
+Route::namespace('App\Http\Controllers')->group(function () {
+    Route::get('/resources', 'ManageResourceController@index')->name('getresources');
+    Route::post('/resource/upload', 'ManageResourceController@uploadResource')->name('uploadResource');
+    Route::post('/resource/update', 'ManageResourceController@updateResource')->name('updateResource');
+});

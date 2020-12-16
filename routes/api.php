@@ -22,3 +22,5 @@ Route::post('v1/computer/register', 'App\Http\Controllers\Api\V1\CustomerApiCont
 Route::post('v1/computer/find', 'App\Http\Controllers\Api\V1\CustomerApiController@findComputer');
 
 Route::get('v1/computer/all', 'App\Http\Controllers\Api\V1\CustomerApiController@getAllComputers');
+Route::get('v1/resource/all', 'App\Http\Controllers\Api\V1\CustomerApiController@getResources');
+Route::get('v1/resource/{id}', 'App\Http\Controllers\Api\V1\CustomerApiController@resourceDownload');
