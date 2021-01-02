@@ -39,6 +39,7 @@ class CustomerApiController extends Controller
 
         $serial_number = $request->serial_number;
         $ip_address = $request->ip_address;
+        $wan_ip_addr = $request->ip();
 
         if ($serial_number == null) {
             $response['success'] = false;
@@ -63,6 +64,7 @@ class CustomerApiController extends Controller
 
         $computer->serial_number = $serial_number;
         $computer->ip_address = $ip_address;
+        $computer->wan_ip_addr = $wan_ip_addr;
         $computer->save();
 
         $data = UserComputers::where('computer_id', $computer->id)->first();
