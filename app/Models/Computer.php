@@ -20,7 +20,11 @@ class Computer extends Model
         'serial_number', 'ip_address'
     ];
 
-    public function rComputerDevice() {
+    public function rComputerDevices() {
         return $this->hasMany(ComputerDevices::class, 'computer_id');
+    }
+
+    public function rComputerGroups() {
+        return $this->hasMany(ComputerGroup::class, 'computer_id');
     }
 }

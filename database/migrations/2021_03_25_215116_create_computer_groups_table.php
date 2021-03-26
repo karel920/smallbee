@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateComputersTable extends Migration
+class CreateComputerGroupsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,10 @@ class CreateComputersTable extends Migration
      */
     public function up()
     {
-        Schema::create('computers', function (Blueprint $table) {
+        Schema::create('computer_groups', function (Blueprint $table) {
             $table->id();
-            $table->string('ip_address', 30);
-            $table->string('wan_ip_addr', 30);
-            $table->string('code', 20)->unique();
+            $table->integer('computer_id');
+            $table->integer('group_id');
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ class CreateComputersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('computers');
+        Schema::dropIfExists('computer_groups');
     }
 }

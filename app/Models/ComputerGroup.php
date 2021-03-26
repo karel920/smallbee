@@ -5,19 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ComputerDevices extends Model
+class ComputerGroup extends Model
 {
     use HasFactory;
 
-    protected $table = 'computer_devices';
+    protected $table = 'computer_groups';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
-        'computer_id', 'device_id'
+        'computer_id', 'group_id'
     ];
 
 
@@ -25,7 +20,7 @@ class ComputerDevices extends Model
         return $this->belongsTo(Computer::class, 'computer_id');
     }
 
-    public function rDevice() {
-        return $this->belongsTo(Device::class, 'deivce_id');
+    public function rGroup() {
+        return $this->belongsTo(Group::class, 'group_id');
     }
 }

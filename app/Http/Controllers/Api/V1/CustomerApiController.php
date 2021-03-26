@@ -6,24 +6,22 @@ use App\Http\Controllers\Controller;
 
 use App\Models\Computer;
 use App\Models\ComputerDevices;
+use App\Models\ComputerGroup;
+use App\Models\Customer;
 use App\Models\Device;
+use App\Models\Group;
 use App\Models\Resource;
 use App\Models\User;
 use App\Models\UserComputers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CustomerApiController extends Controller
 {
 
-    public function getUser(Request $request)
+    public function __construct()
     {
-        $token = $request->token;
-        if ($token == null) {
-            return null;
-        }
-
-        $user = User::where('remember_token', $token)->first();
-        return $user;
+        $this->middleware('auth:api');
     }
 
     public function registerComputer(Request $request)
@@ -106,10 +104,136 @@ class CustomerApiController extends Controller
         return response()->json($response);
     }
 
-    public function getAllComputers()
+    public function updateAllPhones(Request $request)
     {
-        $computers = Computer::all();
-        return $computers;
+        $user = auth()->user();
+        $computer = Computer::where('code', $user->computer_id)->first();
+        $deviceList = $request->devices;
+        $needCreateRelation = false;
+
+        foreach ($deviceList as $deviceItem) {
+            $device = Device::where('serial', $deviceItem['serial'])->first();
+            if ($device == null) {
+                $device = new Device();
+                $needCreateRelation = true;
+            }
+            
+            $device->no = $deviceItem['no'];
+            $device->ip = $deviceItem['ip'];
+            $device->ram = $deviceItem['ram'];
+            $device->name = $deviceItem['name'];
+            $device->imei =  $deviceItem['imei'];
+            $device->root = $deviceItem['root'];
+            $device->size = $deviceItem['size'];
+            $device->model = $deviceItem['model'];
+            $device->serial = $deviceItem['serial'];
+            $device->number = $deviceItem['number'];
+            $device->brand = $deviceItem['brand'];
+            $device->status = $deviceItem['status'];
+            $device->version = $deviceItem['version'];
+            $device->group_id = $deviceItem['group_id'];
+            $device->save();
+
+            if ($needCreateRelation) {
+                $computerDevice = new ComputerDevices();
+                $computerDevice->device_id = $device->id;
+                $computerDevice->computer_id = $computer->id;
+                $computerDevice->save();
+            }
+        }
+
+        $response = [];
+        $response['success'] = true;
+        $response['message'] = "Update Finished";
+
+        return response()->json($response);
+    }
+
+    public function updateAllGroups(Request $request) {
+        $groupList = $request->groups;
+        $user = auth()->user();
+        $computer = Computer::where('code', $user->computer_id)->first();
+        $needCreateRelation = false;
+        foreach ($groupList as $groupItem) {
+            $group = Group::where('uuid', $groupItem['uuid'])->first();
+            if ($group == null) {
+                $group = new Group();
+                $needCreateRelation = true;
+            }
+            
+            $group->uuid = $groupItem['uuid'];
+            $group->name = $groupItem['name'];
+            $group->is_deleted = $groupItem['is_deleted'];
+            $group->save();
+
+            if ($needCreateRelation) {
+                $computerGroup = new ComputerGroup();
+                $computerGroup->group_id = $group->id;
+                $computerGroup->computer_id = $computer->id;
+                $computerGroup->save();
+            }
+        }
+
+        $response = [];
+        $response['success'] = true;
+        $response['message'] = "Update Finished";
+
+        return response()->json($response);
+    }
+
+    public function getAllPhones()
+    {
+        $user = auth()->user();
+        $computer = Computer::where('code', $user->computer_id)->first();
+        $deviceList = [];
+        foreach ($computer->rComputerDevices as $computerDevice) {
+            $device = $computerDevice->rDevice;
+            $data = [];
+            $data['id'] = $device->id;
+            $data['no'] = $device->no;
+            $data['ip'] = $device->ip;
+            $data['ram'] = $device->ram;
+            $data['name'] = $device->name;
+            $data['imei'] = $device->imei;
+            $data['root'] = $device->root;
+            $data['size'] = $device->size;
+            $data['model'] = $device->model;
+            $data['serial'] = $device->serial;
+            $data['number'] = $device->number;
+            $data['brand'] = $device->brand;
+            $data['status'] = $device->status;
+            $data['version'] = $device->version;
+            $data['group_id'] = $device->group_id;
+
+            array_push($deviceList, $data);
+        }
+
+        $response = [];
+        $response['success'] = true;
+        $response['devices'] = $deviceList;
+
+        return response()->json($response);
+    }
+
+    public function getAllGroups() {
+        $user = auth()->user();
+        $computer = Computer::where('code', $user->computer_id)->first();
+        $groupList = [];
+        foreach ($computer->rComputerGroups as $computerGroup) {
+            $group = $computerGroup->rGroup;
+            $data = [];
+            $data['is_deleted'] = $group->is_deleted;
+            $data['uuid'] = $group->uuid;
+            $data['name'] = $group->name;
+
+            array_push($groupList, $data);
+        }
+
+        $response = [];
+        $response['success'] = true;
+        $response['groups'] = $groupList;
+
+        return response()->json($response);
     }
 
     public function findComputer(Request $request)

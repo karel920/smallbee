@@ -15,12 +15,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('v1/auth/register', 'App\Http\Controllers\Api\V1\CustomerLoginController@register');
-Route::post('v1/auth/login', 'App\Http\Controllers\Api\V1\CustomerLoginController@login');
+Route::group(['prefix' => 'v1/auth'], function($router) {
+    Route::post('login', 'App\Http\Controllers\Api\V1\CustomerLoginController@login');
+    Route::post('register', 'App\Http\Controllers\Api\V1\CustomerLoginController@register');
+});
 
-Route::post('v1/computer/register', 'App\Http\Controllers\Api\V1\CustomerApiController@registerComputer');
+Route::group(['middleware' => ['assign.guard:api', 'jwt.auth'], 'prefix' => 'v1'], function($router) {
+    Route::get('devices', 'App\Http\Controllers\Api\V1\CustomerApiController@getAllPhones');
+    Route::get('groups', 'App\Http\Controllers\Api\V1\CustomerApiController@getAllGroups');
+    Route::get('resources', 'App\Http\Controllers\Api\V1\CustomerApiController@getResources');
+    Route::get('resources/{id}', 'App\Http\Controllers\Api\V1\CustomerApiController@resourceDownload');
+
+    Route::post('devices/update', 'App\Http\Controllers\Api\V1\CustomerApiController@updateAllPhones');
+    Route::post('groups/update', 'App\Http\Controllers\Api\V1\CustomerApiController@updateAllGroups');
+});
+
+
 Route::post('v1/computer/find', 'App\Http\Controllers\Api\V1\CustomerApiController@findComputer');
-
 Route::get('v1/computer/all', 'App\Http\Controllers\Api\V1\CustomerApiController@getAllComputers');
-Route::get('v1/resource/all', 'App\Http\Controllers\Api\V1\CustomerApiController@getResources');
-Route::get('v1/resource/{id}', 'App\Http\Controllers\Api\V1\CustomerApiController@resourceDownload');
